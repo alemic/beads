@@ -1,27 +1,35 @@
-var app = new (require("../index.js"));
-app.use(function(context, resolve, reject) {
+var context = {};
+var app = new (require("../index.js"))(context);
+
+app.use(function(context, next) {
     console.log("set mark1!");
     context.mark1 = true;
-    resolve();
+    next();
 });
-app.use(function(context, resolve, reject) {
-    if(context.mark1 && context.mark2) {
-        console.log("mark 1 & mark 2 set!")
-        resolve();
-    } else {
-        reject(); // dependiency not satified, try again later
-    }
-});
-app.use(function(context, resolve, reject) {
-    console.log("set mark2!");
-    context.mark2 = true;
-    resolve();
-});
-app.use(function(context, resolve, reject) {
-    console.log("set mark3!");
+
+app.when(function(context, setDepSatisfied) {
+    setDepSatisfied(context.mark1 && context.mark2);
+}).use(function(context, next) {
+    console.log("mark 1 & mark 2 set!, set mark3 now.");
     context.mark3 = true;
-    resolve();
+    next();
 });
-app.run({}, function(err, context) {
+
+app.when(function(context, setDepSatisfied) {
+    setDepSatisfied(context.mark1);
+}).use(function(context, next) {
+    console.log("mark 1 set! set mark2!");
+    context.mark2 = true;
+    next();
+});
+
+app.when(function(context, setDepSatisfied) {
+    setDepSatisfied(context.mark1);
+}).use(function(context, next) {
+    console.log("mark 1 set!");
+    next();
+});
+
+app.run(function(err, context) {
     console.log("Output Context: " + JSON.stringify(context));
 });
