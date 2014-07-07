@@ -14,7 +14,9 @@ Application.prototype.run = function(context, callback) {
             loop(pending);
         }
         var reject = function() {
-            pending.push(pending.shift());
+            var curr = pending.shift();
+            var next = pending.shift();
+            pending = [next, curr].concat(pending);
             loop(pending);
         }
         if (pending.length > 0 ) {
