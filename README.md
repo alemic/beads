@@ -8,6 +8,8 @@ Dependency Test -> Functions whose dependency was satisfied -> RUN those functio
 
 - Resolve dependency
 
+- Shared context among middlewares
+
 ## Example
 
 ```
