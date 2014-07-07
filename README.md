@@ -1,5 +1,7 @@
 # Beads
 
+General purpose middleware layer for nodejs.
+
 ## Features
 
 - Shared context between middlewares
@@ -31,4 +33,12 @@ app.use(function(context, resolve, reject) {
 app.run({}, function(err, context) {
     console.log("Output Context: " + JSON.stringify(context));
 });
+```
+
+The output:
+```
+set mark1!
+set mark2!
+mark set!
+Output Context: {"mark1":true,"mark2":true}
 ```
