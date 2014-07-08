@@ -33,13 +33,13 @@ Application.prototype.run = function(callback) {
 
     co(function *() {
         var loop = function *(pending) {
-            console.log(this);
             var todos = [],
                 next = [],
                 tests = pending.map(function(middleware) {
-                    return function *() {
-                        return middleware.isDepSatisfied.call(context);
-                    }
+                    return middleware.isDepSatisfied;
+                    // return function *() {
+                    //    return middleware.isDepSatisfied.call(context);
+                    // }
                 });
             (yield tests).forEach(function(satisfied, index) {
                 if(satisfied) {
@@ -52,7 +52,7 @@ Application.prototype.run = function(callback) {
                 // exec one by one
                 var iter = function *() {
                     if(todos.length > 0) {
-                        yield (todos.pop()).call(context, iter);
+                        yield (todos.shift()).call(context, iter);
                     } else {
                         yield loop.call(context, next);
                     }
@@ -63,7 +63,7 @@ Application.prototype.run = function(callback) {
             }
         }
         yield loop.call(context, pending);
-    })();
+    }).call(context);
 }
 
 module.exports = Application;
