@@ -1,4 +1,8 @@
-var async = require("async");
+var co = require("co"),
+    assert = require("assert"),
+    thunkify = require("thunkify"),
+    request = require("request"),
+    fs = require("fs");
 
 var Application = function(context) {
     this.context = context;
@@ -7,60 +11,59 @@ var Application = function(context) {
 
 Application.prototype.when = function(isDepSatisfied) {
     var _this = this;
+    assert(isDepSatisfied.constructor.name == "GeneratorFunction", "app.when: wrong type argument, generator function needed");
     return {
         use: function(fn) {
+            assert(fn.constructor.name == "GeneratorFunction", "app.use: wrong type argument, generator function needed");
             _this.middlewares.push({isDepSatisfied: isDepSatisfied, fn: fn})
         }
     }
 }
 
 Application.prototype.use = function(fn) {
-    this.middlewares.push({depSatisfied: true, fn: fn});
+    var _this = this;
+    this.when(function *() {
+        return true;
+    }).use(fn);
 }
 
 Application.prototype.run = function(callback) {
     var context = this.context;
     var pending = this.middlewares.concat(); // clone array
-    var loop = function(pending) {
 
-        var todos = [];
-        var next = [];
-
-        var isDepSatisfied = function(middleware, callback) {
-            if(middleware.depSatisfied) {
-                callback(null, true);
-            } else {
-                middleware.isDepSatisfied(context, function(depSatisfied) {
-                    callback(null, depSatisfied);
-                });
-            };
-        }
-
-        var tests = pending.map(function(middleware) {
-            return function(callback) {
-                isDepSatisfied(middleware, function(err, depSatified) {
-                    if (depSatified) {
-                        todos.push(function(callback) {
-                            middleware.fn(context, callback);
-                        });
-                    } else {
-                        next.push(middleware);
+    co(function *() {
+        var loop = function *(pending) {
+            console.log(this);
+            var todos = [],
+                next = [],
+                tests = pending.map(function(middleware) {
+                    return function *() {
+                        return middleware.isDepSatisfied.call(context);
                     }
-                    callback();
                 });
-            }
-        });
-
-
-        async.parallel(tests, function() {
+            (yield tests).forEach(function(satisfied, index) {
+                if(satisfied) {
+                    todos.push(pending[index].fn);
+                } else {
+                    next.push(pending[index]);
+                }
+            });
             if(todos.length > 0) {
-                async.series(todos.concat([function() {loop(next)}]));
+                // exec one by one
+                var iter = function *() {
+                    if(todos.length > 0) {
+                        yield (todos.pop()).call(context, iter);
+                    } else {
+                        yield loop.call(context, next);
+                    }
+                }
+                yield iter()
             } else {
                 callback(null, context);
             }
-        });
-    }
-    loop(pending);
+        }
+        yield loop.call(context, pending);
+    })();
 }
 
 module.exports = Application;

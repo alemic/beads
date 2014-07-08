@@ -1,18 +1,27 @@
 {
-    "name": "beads",
-    "version": "0.0.2",
-    "keywords": ["beads"],
-    "description": "beads",
-    "homepage" : "https://github.com/zenozeng/beads",
-    "bugs": {
-        "url": "https://github.com/zenozeng/beads/issues",
-        "email": "zenoofzeng@gmail.com"
-    },
-    "license": "MIT",
-    "author": {
-        "name": "Zeno Zeng",
-        "email": "zenoofzeng@gmail.com",
-        "url": "https://zenozeng.com"
-    },
-    "dependencies": {}
+  "name": "beads",
+  "version": "0.0.3",
+  "keywords": [
+    "beads"
+  ],
+  "description": "beads",
+  "homepage": "https://github.com/zenozeng/beads",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zenozeng/beads"
+  },
+  "bugs": {
+    "url": "https://github.com/zenozeng/beads/issues",
+    "email": "zenoofzeng@gmail.com"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Zeno Zeng",
+    "email": "zenoofzeng@gmail.com",
+    "url": "https://zenozeng.com"
+  },
+  "dependencies": {
+    "co": "~3.0.6",
+    "thunkify": "^2.1.2"
+  }
 }
