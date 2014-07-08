@@ -11,10 +11,10 @@ var Application = function(context) {
 
 Application.prototype.when = function(isDepSatisfied) {
     var _this = this;
-    assert(isDepSatisfied.constructor.name == "GeneratorFunction", "app.when: wrong type argument, generator function needed");
+    assert(isDepSatisfied.constructor.name == "GeneratorFunction", "app.when: generator function needed");
     return {
         use: function(fn) {
-            assert(fn.constructor.name == "GeneratorFunction", "app.use: wrong type argument, generator function needed");
+            assert(fn.constructor.name == "GeneratorFunction", "app.use: generator function needed");
             _this.middlewares.push({isDepSatisfied: isDepSatisfied, fn: fn})
         }
     }
@@ -37,9 +37,6 @@ Application.prototype.run = function(callback) {
                 next = [],
                 tests = pending.map(function(middleware) {
                     return middleware.isDepSatisfied;
-                    // return function *() {
-                    //    return middleware.isDepSatisfied.call(context);
-                    // }
                 });
             (yield tests).forEach(function(satisfied, index) {
                 if(satisfied) {
