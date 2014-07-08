@@ -1,18 +1,22 @@
 # Beads
 
-Koa like General purpose middleware layer for nodejs.
-
-Dependency Test -> Functions whose dependency was satisfied -> RUN those functions one by one -> Dependency Test
+Beads is a Koa like, general purpose middleware layer for nodejs.
 
 ## Features
 
-- Resolve dependency
+- Simple dependency resolution system
+
+    Use app.when. See the example below.
+
+    Dependency Test -> Functions whose dependency was satisfied -> RUN those functions one by one -> Dependency Test
 
 - Shared context among middlewares
 
+- Use `co` and `generators` for middlewares
+
 ## Example
 
-```
+```javascript
 var context = {};
 var app = new (require("../index.js"))(context);
 
@@ -69,6 +73,18 @@ Output Context: {"mark1":true,"mark2":true}
 timer end
 2ms
 ```
+
+## Installation
+
+```
+$ npm install beads
+```
+
+## Compatibility
+
+You can use the `--harmony` flag when using node 0.11+.
+
+Or, you can use [gnode](https://github.com/TooTallNate/gnode) if you are using node 0.10 or below.
 
 ## FAQ
 
